@@ -17,24 +17,26 @@ class _StreamScreenState extends State<StreamScreen> {
   int lastNumber = 0;
   late StreamController<int> numberStreamController;
   late NumberStream numberStream;
+  late StreamSubscription _numberSubscription;
 
   @override
   void initState() {
     numberStream = NumberStream();
     numberStreamController = numberStream.controller;
     Stream stream = numberStreamController.stream;
-    stream
-        .listen((event) {
-          setState(() {
-            lastNumber = event;
-          });
-        })
-        .onError((error) {
-          setState(() {
-            lastNumber = -1;
-          });
+    _numberSubscription = stream.listen(
+      (event) {
+        setState(() {
+          lastNumber = event;
         });
-
+      },
+      onError: (error) {
+        setState(() {
+          lastNumber = -1;
+        });
+      },
+    );
+    
     super.initState();
   }
 
@@ -75,14 +77,15 @@ class _StreamScreenState extends State<StreamScreen> {
 
   @override
   void dispose() {
+    _numberSubscription.cancel();
     numberStreamController.close();
     super.dispose();
   }
 
   void addRandomNumber() {
     Random random = Random();
-    //int myNum = random.nextInt(10);
-    //numberStream.addNumberToSink(myNum);
-    numberStream.addError();
+    int myNum = random.nextInt(10);
+    numberStream.addNumberToSink(myNum);
+    //numberStream.addError();
   }
 }
