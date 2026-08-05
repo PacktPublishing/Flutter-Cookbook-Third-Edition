@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
-class GeoLocationScreen extends StatelessWidget {
+class GeoLocationScreen extends StatefulWidget {
   const GeoLocationScreen({super.key});
+
+  @override
+  State<GeoLocationScreen> createState() => _GeoLocationScreenState();
+}
+
+class _GeoLocationScreenState extends State<GeoLocationScreen> {
+  late final Future<Position> _positionFuture;
+  @override
+  void initState() {
+    super.initState();
+    _positionFuture = getPosition();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +22,7 @@ class GeoLocationScreen extends StatelessWidget {
       appBar: AppBar(title: Text('Current Location')),
       body: Center(
         child: FutureBuilder(
-          future: getPosition(),
+          future: _positionFuture,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
