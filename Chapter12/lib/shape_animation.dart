@@ -21,10 +21,7 @@ class _ShapeAnimationState extends State<ShapeAnimation>
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
 
-    animation = Tween<double>(begin: 0, end: 200).animate(controller)
-      ..addListener(() {
-        moveBall();
-      });
+    animation = Tween<double>(begin: 0, end: 200).animate(controller);
   }
 
   @override
@@ -43,7 +40,19 @@ class _ShapeAnimationState extends State<ShapeAnimation>
       ),
 
       body: Stack(
-        children: [Positioned(left: pos, top: pos, child: const Ball())],
+        children: [
+          AnimatedBuilder(
+            animation: animation,
+            child: const Ball(),
+            builder: (context, child) {
+              return Positioned(
+                left: animation.value,
+                top: animation.value,
+                child: child!,
+              );
+            },
+          ),
+        ],
       ),
     );
   }
