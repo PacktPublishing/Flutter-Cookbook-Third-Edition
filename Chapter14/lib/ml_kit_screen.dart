@@ -51,7 +51,7 @@ class _MLKitScreenState extends State<MLKitScreen> {
       final String text = label.label;
       final int index = label.index;
       final double confidence = label.confidence;
-      result += '$index: $text - ${confidence * 100}% \n';
+      result += '$index: $text - ${(confidence * 100).toStringAsFixed(1)}%\n';
     }
     return result;
   }
@@ -134,11 +134,19 @@ class _MLKitScreenState extends State<MLKitScreen> {
               onPressed: () async {
                 if (image == null || isProcessing) return;
                 isProcessing = true;
-                final text = await textFromImage(image!);
-                setState(() {
-                  result = text;
-                  isProcessing = false;
-                });
+                try {
+                  final text = await textFromImage(image!);
+                  if (!mounted) return;
+                  setState(() {
+                    result = text;
+                    isProcessing = false;
+                  });
+                } catch (e) {
+                  setState(() {
+                    result = 'Error occurred while recognizing text: $e';
+                    isProcessing = false;
+                  });
+                }
               },
               child: const Text('Text Recognition'),
             ),
@@ -148,6 +156,7 @@ class _MLKitScreenState extends State<MLKitScreen> {
                 if (image == null || isProcessing) return;
                 isProcessing = true;
                 final labels = await labelImage(image!);
+                if (!mounted) return;
                 setState(() {
                   result = labels;
                   isProcessing = false;
@@ -159,8 +168,9 @@ class _MLKitScreenState extends State<MLKitScreen> {
             ElevatedButton(
               onPressed: () async {
                 if (image == null || isProcessing) return;
-                isProcessing = true;  
+                isProcessing = true;
                 final faces = await detectFace(image!);
+                if (!mounted) return;
                 setState(() {
                   result = faces;
                   isProcessing = false;
