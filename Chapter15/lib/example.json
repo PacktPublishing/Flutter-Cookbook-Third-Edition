@@ -1,0 +1,12 @@
+{
+    "date": "2026-06-08",
+    "items": [
+        {
+            "name": "Pizza Margherita",
+            "quantity": 4,
+            "unitPrice": 8.0,
+            "total": 32.0
+        }
+    ],
+    "total": 32.0
+}

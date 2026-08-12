@@ -1,8 +1,9 @@
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
+import './receipt.dart';
 
 class AIScreen extends StatefulWidget {
   const AIScreen({super.key});
@@ -15,7 +16,8 @@ class _AIScreenState extends State<AIScreen> {
   final txtPrompt = TextEditingController();
   String result = '';
   bool isLoading = false;
-  File? image;
+  XFile? image;
+  Uint8List? imageBytes;
 
   final schema = Schema.object(
     properties: {
@@ -24,7 +26,7 @@ class _AIScreenState extends State<AIScreen> {
         items: Schema.object(
           properties: {
             'name': Schema.string(),
-            'quantity': Schema.number(),
+            'quantity': Schema.integer(),
             'unitPrice': Schema.number(),
             'total': Schema.number(),
           },
@@ -35,6 +37,34 @@ class _AIScreenState extends State<AIScreen> {
   );
 
   Future<void> sendPrompt() async {
+    // setState(() {
+    //   isLoading = true;
+    //   result = '';
+    // });
+    // try {
+    //   final model = FirebaseAI.googleAI().generativeModel(
+    //     model: 'gemini-flash-lite-latest',
+    //   );
+    //   final response = await model.generateContent([
+    //     Content.text(txtPrompt.text),
+    //   ]);
+    //   if (!mounted) return;
+    //   setState(() {
+    //     result = response.text ?? 'No response';
+    //   });
+    // } catch (e) {
+    //   if (!mounted) return;
+    //   setState(() {
+    //     result = 'Error: $e';
+    //   });
+    // } finally {
+    //   if (mounted) {
+    //     setState(() {
+    //       isLoading = false;
+    //     });
+    //   }
+    // }
+
     setState(() {
       isLoading = true;
       result = '';
@@ -58,30 +88,41 @@ class _AIScreenState extends State<AIScreen> {
     final imageBytes = await image!.readAsBytes();
 
     final TextPart textPart = TextPart('''
-You are an expert at analyzing receipts.  
-Analyze the receipt in the image and extract the following data: 
-- purchase date 
-- purchased items 
-- quantity for each item 
-- price of each item 
-- total of each item 
-- final general total 
+    You are an expert at analyzing receipts.
+    Analyze the receipt in the image and extract the following data:
+    - purchase date
+    - purchased items
+    - quantity for each item
+    - price of each item
+    - total of each item
+    - final general total
 
-Only return valid JSON. 
- 
-''');
+    Only return valid JSON.
+
+    ''');
 
     final response = await model.generateContent([
-      Content.multi([
-        textPart,
-        InlineDataPart('image/jpeg', imageBytes),
-      ]),
+      Content.multi([textPart, InlineDataPart('image/jpeg', imageBytes)]),
     ]);
 
-    final decodedJson = jsonDecode(response.text ?? '{}');
+    final responseText = response.text;
 
+    if (responseText == null || responseText.isEmpty) {
+      setState(() {
+        result = 'No response from the model.';
+        isLoading = false;
+      });
+      return;
+    }
+
+    final decodedJson = jsonDecode(response.text!);
+    final receipt = Receipt.fromJson(decodedJson);
     setState(() {
-      result = decodedJson.toString();
+      result =
+          '''
+      Date: ${receipt.date}
+      Items: ${receipt.items.length}
+      Total: ${receipt.total} ''';
       isLoading = false;
     });
   }
@@ -93,8 +134,21 @@ Only return valid JSON.
 
     if (pickedImage == null) return;
 
+    final fileName = pickedImage.name.toLowerCase();
+    if (!fileName.endsWith('.jpg') && !fileName.endsWith('.jpeg')) {
+      if (!mounted) return;
+      setState(() {
+        result = 'Please select a JPEG image.';
+      });
+      return;
+    }
+
+    final bytes = await pickedImage.readAsBytes();
+    if (!mounted) return;
+
     setState(() {
-      image = File(pickedImage.path);
+      image = pickedImage;
+      imageBytes = bytes;
       result = '';
     });
   }
@@ -121,7 +175,7 @@ Only return valid JSON.
             if (image != null)
               SizedBox(
                 height: 250,
-                child: Image.file(image!, fit: BoxFit.cover),
+                child: Image.memory(imageBytes!, fit: BoxFit.cover),
               ),
             const SizedBox(height: 16),
             // TextField(
