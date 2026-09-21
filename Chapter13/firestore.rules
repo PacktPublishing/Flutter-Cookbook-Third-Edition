@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Minimum rules for the Chapter 13 recipes.
+//
+// The Firebase console creates new projects in *test mode*, which allows any
+// read or write for 30 days and then denies everything. Replace those generated
+// rules with the ones below before you publish anything real: they require a
+// signed-in user for every operation.
+//
+// Deploy with:  firebase deploy --only firestore:rules
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Any signed-in user may read and write. Unauthenticated requests are
+    // denied, because request.auth is null when nobody is signed in.
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

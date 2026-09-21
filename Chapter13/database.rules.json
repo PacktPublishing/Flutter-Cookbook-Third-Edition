@@ -1,0 +1,13 @@
+{
+  "//": [
+    "Minimum rules for the Chapter 13 Realtime Database recipe.",
+    "Replace the console's generated test-mode rules with these before",
+    "publishing. They require a signed-in user for every read and write:",
+    "auth is null when nobody is signed in.",
+    "Deploy with:  firebase deploy --only database"
+  ],
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
