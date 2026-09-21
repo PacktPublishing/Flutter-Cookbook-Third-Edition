@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "notes": {
+      "command": "dart",
+      "args": [
+        "run",
+        "/Users/my/Documents/mcp_notes_server/bin/server.dart"
+      ]
+    }
+  }
+}
