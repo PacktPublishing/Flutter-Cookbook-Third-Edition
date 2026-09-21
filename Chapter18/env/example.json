@@ -1,0 +1,6 @@
+{
+  "API_BASE_URL": "https://api-dev.example.com",
+  "API_KEY": "<your-api-key>",
+  "SHOW_DEBUG_BANNER": "true",
+  "LOG_LEVEL": "verbose"
+}
