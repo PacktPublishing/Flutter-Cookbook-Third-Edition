@@ -1,0 +1,84 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Android signing
+android/key.properties
+**/*.jks
+
+# ---------------------------------------------------------------------------
+# Secrets & machine-local config (book companion repo)
+# Readers supply their own values; see README.md "Setup for readers".
+# ---------------------------------------------------------------------------
+
+# Android signing
+**/key.properties
+**/*.keystore
+**/*.jks
+
+# Machine-local SDK paths
+**/local.properties
+
+# Firebase / Google services (generated per developer account)
+**/google-services.json
+**/GoogleService-Info.plist
+**/firebase_options.dart
+
+# Environment / dart-define config
+.env
+.env.*
+env/*.json
+**/*.env
+
+# Flutter-generated files containing absolute local paths
+**/Flutter/Generated.xcconfig
+**/Flutter/flutter_export_environment.sh
+**/Flutter/ephemeral/
+
+# Xcode per-user state (contains your macOS username)
+**/xcuserdata/
+
+# Never ignore the templates readers need
+!*.example
